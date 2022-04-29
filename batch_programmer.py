@@ -37,7 +37,7 @@ def choose_quantity():
 
 
 #	Programming routine of the chips
-def programming_routine(counter):
+def programming_routine(counter):	#	The input needs a int. This number gives the program how many chips will be programmed
 	hex_file = file_find()	#	Find the file first
 	while counter > 0:	
 		exit_status = programmer(hex_file)	#	Program each microcontroller independently
@@ -47,10 +47,10 @@ def programming_routine(counter):
 				input("OK.Press any key to continue!")
 			case _:
 				input("Something gone wrong :(")
-		
+
 		
 #	The actual programming of each chip
-def programmer(file):
+def programmer(file):	#	The input needs a *.ino.hex file to read from and write to the chip
 	os.chdir(BUILD_PATH)	# Change to the build directory
 	command = "avrdude -v -p "+my_mcu+" -c "+my_programmer+" -U lfuse:w:0xE2:m -U flash:w:"+file 
 	print("Programming...")
@@ -65,7 +65,7 @@ def file_find():
 
 
 #	Utility function that take each kind of memory from the mcu and copies it to a folder
-def mcu_backup(where):	
+def mcu_backup(where):	#	"where" is the folder that the files should be saved
 	os.chdir(where)	#	In which folder you want to save the results 
 	mem_type = ["eeprom", "flash", "signature", "lfuse", "hfuse", "efuse"]
 	for m in mem_type:
@@ -75,7 +75,7 @@ def mcu_backup(where):
 		
 		
 #	Write the MCU's	default state in the MCU	
-def mcu_restore(default_folder):
+def mcu_restore(default_folder):	#	"default_folder" is the folder where are saved files for the backup 
 	os.chdir(default_folder)	#	In which folder you want to save the results 
 	mem_type = ["eeprom", "flash", "lfuse", "hfuse", "efuse"]
 	for m in mem_type:
@@ -86,6 +86,4 @@ def mcu_restore(default_folder):
 	
 #	Main-----------------------------------------------------------------
 
-# temp = choose_quantity()
-# print(temp)
 programming_routine(choose_quantity())
