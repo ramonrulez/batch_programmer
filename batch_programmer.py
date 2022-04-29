@@ -49,9 +49,7 @@ def programming_routine(counter):
 #	The actual programming of each chip
 def programmer(file):
 	os.chdir(BUILD_PATH)	# Change to the build directory
-	command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -v -U lfuse:w:0xE2:m -U flash:w:"+file 
-	print(command)
-	print(os.getcwd()) 
+	command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -U lfuse:w:0xE2:m -U flash:w:"+file 
 	print("Programming...")
 	exit_status = os.system(command)
 	return exit_status
@@ -66,28 +64,24 @@ def file_find():
 #	Utility function that take each kind of memory from the mcu and copies it to a folder
 def mcu_backup(where):	
 	os.chdir(where)	#	In which folder you want to save the results 
-	mem_type = ["eeprom", "flash", "signature", "lfuse", "hfuse", "efuse", "calibration"]
+	mem_type = ["eeprom", "flash", "signature", "lfuse", "hfuse", "efuse"]
 	for m in mem_type:
-		command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -v -n -U "+m+":r:"+m+".hex:h"
+		command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -v -n -U "+m+":r:"+m+".hex:i"
 		os.system(command)
 	return 0
 		
 		
 #	Write the MCU's	default state in the MCU	
-def mcu_default(default_folder):
+def mcu_restore(default_folder):
 	os.chdir(default_folder)	#	In which folder you want to save the results 
-	# mem_type = ["eeprom", "flash", "lfuse", "hfuse", "efuse"]
-	mem_type = ["lfuse"]
+	mem_type = ["eeprom", "flash", "lfuse", "hfuse", "efuse"]
 	for m in mem_type:
-		command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -v -U "+m+":w:"+m+".hex:h"
+		command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -v -U "+m+":w:"+m+".hex"
 		os.system(command)
 	return 0
 	
 	
 #	Main-----------------------------------------------------------------
-
-mcu_backup("ATtinny_85_backup")
-# mcu_default("old")
 
 
 # programming_routine(choose_quantity())
