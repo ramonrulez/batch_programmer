@@ -19,18 +19,21 @@ my_mcu = "t85"
 def choose_quantity():
 	while 1:
 		while 1:
-			count = input("How much do you want? : ")			
+			count = input("How much do you want? [Give a number]: ")			
 			try:
 				count = int(count)
 				break
 			except ValueError:
 				print("This is not a number")		
+		
 		print("You choose", count,"!")
-		choise = input("Are you sure you need this much? (y/N) :")
+		
+		choise = input("Are you sure you need this much? (y/N)(q to Quit) :")
 		match choise:
 			case "Y" | "y":
-				break
-	return count
+				return count
+			case "Q" | "q":
+				return 0 
 
 
 #	Programming routine of the chips
@@ -49,7 +52,7 @@ def programming_routine(counter):
 #	The actual programming of each chip
 def programmer(file):
 	os.chdir(BUILD_PATH)	# Change to the build directory
-	command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -U lfuse:w:0xE2:m -U flash:w:"+file 
+	command = "avrdude -v -p "+my_mcu+" -c "+my_programmer+" -U lfuse:w:0xE2:m -U flash:w:"+file 
 	print("Programming...")
 	exit_status = os.system(command)
 	return exit_status
@@ -66,7 +69,7 @@ def mcu_backup(where):
 	os.chdir(where)	#	In which folder you want to save the results 
 	mem_type = ["eeprom", "flash", "signature", "lfuse", "hfuse", "efuse"]
 	for m in mem_type:
-		command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -v -n -U "+m+":r:"+m+".hex:i"
+		command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -n -U "+m+":r:"+m+".hex:i"
 		os.system(command)
 	return 0
 		
@@ -76,12 +79,13 @@ def mcu_restore(default_folder):
 	os.chdir(default_folder)	#	In which folder you want to save the results 
 	mem_type = ["eeprom", "flash", "lfuse", "hfuse", "efuse"]
 	for m in mem_type:
-		command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -v -U "+m+":w:"+m+".hex"
+		command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -U "+m+":w:"+m+".hex"
 		os.system(command)
 	return 0
 	
 	
 #	Main-----------------------------------------------------------------
 
-
-# programming_routine(choose_quantity())
+# temp = choose_quantity()
+# print(temp)
+programming_routine(choose_quantity())
