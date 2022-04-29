@@ -116,12 +116,16 @@ def mcu_restore(backup_folder):	#	"backup_folder" is the folder restore_folder a
 
 
 def main_menu():
-	pass
+	print("Program ATtiny85")
+	print("Backup chip")
+	print("Restore chip")
+	print("[Q]uit")
+	choose = ("What do you want to do? : ")
 	return 0
 	
 #	MAIN-----------------------------------------------------------------
 
-mcu_backup("tested")
 
+main_menu()
 # programming_routine(choose_quantity())
 input("Press Any Key to Quit!")
