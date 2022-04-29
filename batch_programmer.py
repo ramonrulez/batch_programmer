@@ -1,5 +1,4 @@
 import os
-import glob
 
 #	Welcome--------------------------------------------------------------
 print("\n -------------------------------------")
@@ -7,13 +6,17 @@ print("| Welcome to the repeated programmer! |")
 print(" -------------------------------------\n")
 
 #	Initialization-------------------------------------------------------
-User=os.getlogin()
-BUILD_FOLDER="C:/Users/" +User+ "/Documents/Arduino/Builds"
+PATH = os.getcwd()
 
+User = os.getlogin()
+BUILD_PATH = "C:/Users/" +User+ "/Documents/Arduino/Builds"
+
+my_programmer = "usbtiny"
+my_mcu = "t85"
 
 #	Functions------------------------------------------------------------
-#	Quantity menu with checks
-def choose_quantity_menu():
+#	This function returns how much chips you choose to program
+def choose_quantity():
 	while 1:
 		while 1:
 			count = input("How much do you want? : ")			
@@ -27,11 +30,10 @@ def choose_quantity_menu():
 		match choise:
 			case "Y" | "y":
 				break
-
 	return count
 
 
-#	The actual programming of the chip
+#	Programming routine of the chips
 def programming_routine(counter):
 	hex_file = file_find()	#	Find the file first
 	while counter > 0:	
@@ -44,39 +46,48 @@ def programming_routine(counter):
 				input("Something gone wrong :(")
 		
 		
+#	The actual programming of each chip
 def programmer(file):
-	# avrdude -c usbtiny -p t85 -v -U flash:w:SRE_100_PROGRAM_V7_8Mhz.ino.hex -U lfuse:w:0xE2:m
-	command = "avrdude -c usbtiny -p t85 " +file
+	os.chdir(BUILD_PATH)	# Change to the build directory
+	command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -v -U lfuse:w:0xE2:m -U flash:w:"+file 
+	print(command)
+	print(os.getcwd()) 
 	print("Programming...")
 	exit_status = os.system(command)
 	return exit_status
-	
+
+
+#	Find the build file
 def file_find():
-	os.chdir(BUILD_FOLDER)	# Change to the build directory
-	file = "to_file"	#	DELETE THIS
-	
-	#
-	#
-	#	The actual code to find the right file
-	#
-	#
-	return file
+	file = [x for x in os.listdir(BUILD_PATH) if x.endswith('.ino.hex')]
+	return file[0]
 
-def microcontroller_backup(where):	
-	os.chdir(where)
 
+#	Utility function that take each kind of memory from the mcu and copies it to a folder
+def mcu_backup(where):	
+	os.chdir(where)	#	In which folder you want to save the results 
 	mem_type = ["eeprom", "flash", "signature", "lfuse", "hfuse", "efuse", "calibration"]
 	for m in mem_type:
-		command = "avrdude -c usbtiny -p t85 -v -n -U " +m+ ":r:" +m+ ".hex:h"
+		command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -v -n -U "+m+":r:"+m+".hex:h"
 		os.system(command)
+	return 0
 		
-
+		
+#	Write the MCU's	default state in the MCU	
+def mcu_default(default_folder):
+	os.chdir(default_folder)	#	In which folder you want to save the results 
+	# mem_type = ["eeprom", "flash", "lfuse", "hfuse", "efuse"]
+	mem_type = ["lfuse"]
+	for m in mem_type:
+		command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -v -U "+m+":w:"+m+".hex:h"
+		os.system(command)
+	return 0
+	
+	
 #	Main-----------------------------------------------------------------
 
-# microcontroller_backup("new")
+mcu_backup("ATtinny_85_backup")
+# mcu_default("old")
 
-# programming_routine(choose_quantity_menu())
 
-os.chdir(BUILD_FOLDER)
-file = glob.glob("*.ino.hex")
-print(file)
+# programming_routine(choose_quantity())
