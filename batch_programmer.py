@@ -41,8 +41,26 @@ def choose_quantity():
 
 #	This function return a string as a name for a folder
 def choose_folder():
-	pass
-
+	dir_list = list(filter(os.path.isdir, os.listdir())) # This is a list of the directory in the current path
+	while 1:
+		while 1:
+			for i in range(len(dir_list)):
+				print(i+1, ")", dir_list[i]) # Print all directories that you found
+			print(i+1, ") OR choose something else!") 
+			try: 
+				choose = int(input('\nChoose a number[1-{}]:'.format(i+1)))
+				break
+			except ValueError:
+				os.system('cls')	# Clear screen
+				print("This is not a valid value!")
+				break
+		if 1 <= choose & choose < i+1 :
+			break
+		
+	folder = str(input("Choose a folder: "))
+	return folder
+	
+	
 #	Programming routine of the chips
 def programming_routine(counter):	#	The input needs a int. This number gives the program how many chips will be programmed
 	hex_file = file_find()	#	Find the file first
@@ -129,7 +147,7 @@ class menu_object:
 		self.command = cmd
 	
 
-
+#	The Main Menu of the script
 def main_menu():
 	while 1:
 		for i in range(len(menu_list)):
@@ -145,19 +163,21 @@ def main_menu():
 	exec(code_obj)
 	
 
-# Objects initialization for the main menu. 
-# menu_object(name, output, command)
+# 	Objects initialization for the main menu.----------------------------
+#	menu_object(name, output, command)
 menu_list = [
 	menu_object("at85", "Program ATtiny85", 'programming_routine(choose_quantity())'),
-	menu_object("restore", "Restore ATtiny85 in it's default state",'mcu_restore()'),
-	menu_object("backup", "Backup Chip",'mcu_backup()'),
-	menu_object("quit", "Quit",'input("Press Any Key to Quit!")'),
+	menu_object("backup", "Backup a Chip",'mcu_backup(choose_folder())'),
+	menu_object("restore", "Restore a Chip",'mcu_restore(choose_folder())'),
+	menu_object("restore", "Restore ATtiny85 in it's default state",'mcu_restore("ATtiny_85_default_state")'),
+	menu_object("quit", "Quit",'pass'),
 ]
 
 
 #	MAIN-----------------------------------------------------------------	
 
+# choose_folder()
 
 main_menu()
-
-# input("Press Any Key to Quit!")
+input("Press Any Key to Quit!")
+os.system('cls')	# Clear screen
