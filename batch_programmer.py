@@ -1,9 +1,11 @@
 import os
 
 #	WELCOME--------------------------------------------------------------
+os.system('cls')	# Clear screen
 print("\n -------------------------------------")
 print("| Welcome to the batch programmer! |")
 print(" -------------------------------------\n")
+
 
 #	INITIALIZATION-------------------------------------------------------
 PATH = os.getcwd()
@@ -14,8 +16,8 @@ BUILD_PATH = "C:/Users/" +User+ "/Documents/Arduino/Builds"
 my_programmer = "usbtiny"
 my_mcu = "t85"
 
-#	FUNCTIONS------------------------------------------------------------
 
+#	FUNCTIONS------------------------------------------------------------
 #	This function returns how much chips you choose to program
 def choose_quantity():
 	while 1:
@@ -121,43 +123,49 @@ def mcu_restore(backup_folder):	#	"backup_folder" is the folder restore_folder a
 
 #	Classes for the the main menu objects
 class menu_object:
-	# instances = []
-	def __init__(self, key, output, command):
-		self.id = key
-		self.out = output
-		self.cmd = command
-		# self.__class__.instances.append(self)
+	def __init__(self, id, out, cmd):
+		self.name = id
+		self.output = out
+		self.command = cmd
 	
 
 
 def main_menu():
-	os.system('cls')	# Clear screen
-	print("Program ATtiny85")
+	while 1:
+		for i in range(len(menu_list)):
+			print(i+1,")",menu_list[i].output)
+		try:
+			choose = int(input("\nWhat do you want to do? : "))
+			if 0 < choose & choose <= len(menu_list):
+				break
+		except ValueError:
+			os.system('cls')	# Clear screen
+			print("This is not a correct choise.\n")
+	# x = print(menu_list[choose-1].command)
+	# exec(x)
+	# eval(x)
+	# os.system()
+	# menu_list[choose-1].command
 
-	print("Backup chip")
-	print("Restore chip")
-	print("[Q]uit")
-	choose = ("What do you want to do? : ")
-	return 0	
 
-
-# Objects initialization for the main menu
-menu_list = [menu_object("at85", "Program ATtiny85", "programming_routine(choose_quantity())"),
-	menu_object("restore", "Restore ATtiny85 in it's default state","mcu_restore()"),
-	menu_object("backup", "Backup Chip","mcu_backup()")
+# Objects initialization for the main menu. 
+# menu_object(name, output, command)
+menu_list = [
+	menu_object("at85", "Program ATtiny85", 'programming_routine(choose_quantity())'),
+	menu_object("restore", "Restore ATtiny85 in it's default state",'mcu_restore()'),
+	menu_object("backup", "Backup Chip",'mcu_backup()'),
+	menu_object("quit", "[Q]uit",'return 0'),
+	menu_object("quit", "a choise",'print("Success")'),
 ]
 
-
-print(menu_list[1].out)
-# print(at85.cmd)
-# print(at85.instances)
-# (at85.instances)
-# print(at85.self)
-# print('\n'.join(menu_object.instances))
-# print(join(A.instances))
+# code_obj = compile('print("Success")', '<string>', 'exec')
+# exec(code_obj)
 
 
-#	MAIN-----------------------------------------------------------------
+
+
+#	MAIN-----------------------------------------------------------------	
+
 
 # main_menu()
 input("Press Any Key to Quit!")
