@@ -2,7 +2,7 @@ import os
 
 #	WELCOME--------------------------------------------------------------
 print("\n -------------------------------------")
-print("| Welcome to the repeated programmer! |")
+print("| Welcome to the batch programmer! |")
 print(" -------------------------------------\n")
 
 #	INITIALIZATION-------------------------------------------------------
@@ -36,6 +36,10 @@ def choose_quantity():
 			case "Q" | "q":
 				return 0 
 
+
+#	This function return a string as a name for a folder
+def choose_folder():
+	pass
 
 #	Programming routine of the chips
 def programming_routine(counter):	#	The input needs a int. This number gives the program how many chips will be programmed
@@ -78,7 +82,7 @@ def check_dir(dir):
 			return 1
 
 
-#	Utility function that take each kind of memory from the MCU and copies it to a folder
+#	Utility function that backup each kind of memory from the MCU and copies it to a folder
 def mcu_backup(restore_folder):	#	"restore_folder" is the folder that the files going to be saved
 	isdir = check_dir(restore_folder)
 	match isdir:
@@ -115,17 +119,45 @@ def mcu_restore(backup_folder):	#	"backup_folder" is the folder restore_folder a
 			return 1
 
 
+#	Classes for the the main menu objects
+class menu_object:
+	# instances = []
+	def __init__(self, key, output, command):
+		self.id = key
+		self.out = output
+		self.cmd = command
+		# self.__class__.instances.append(self)
+	
+
+
 def main_menu():
+	os.system('cls')	# Clear screen
 	print("Program ATtiny85")
+
 	print("Backup chip")
 	print("Restore chip")
 	print("[Q]uit")
 	choose = ("What do you want to do? : ")
-	return 0
-	
+	return 0	
+
+
+# Objects initialization for the main menu
+menu_list = [menu_object("at85", "Program ATtiny85", "programming_routine(choose_quantity())"),
+	menu_object("restore", "Restore ATtiny85 in it's default state","mcu_restore()"),
+	menu_object("backup", "Backup Chip","mcu_backup()")
+]
+
+
+print(menu_list[1].out)
+# print(at85.cmd)
+# print(at85.instances)
+# (at85.instances)
+# print(at85.self)
+# print('\n'.join(menu_object.instances))
+# print(join(A.instances))
+
+
 #	MAIN-----------------------------------------------------------------
 
-
-main_menu()
-# programming_routine(choose_quantity())
+# main_menu()
 input("Press Any Key to Quit!")
