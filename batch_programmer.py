@@ -141,12 +141,9 @@ def main_menu():
 		except ValueError:
 			os.system('cls')	# Clear screen
 			print("This is not a correct choise.\n")
-	# x = print(menu_list[choose-1].command)
-	# exec(x)
-	# eval(x)
-	# os.system()
-	# menu_list[choose-1].command
-
+	code_obj = compile(menu_list[choose-1].command, '<string>', 'exec')	# This command executes the command of the object we choose.
+	exec(code_obj)
+	
 
 # Objects initialization for the main menu. 
 # menu_object(name, output, command)
@@ -154,18 +151,13 @@ menu_list = [
 	menu_object("at85", "Program ATtiny85", 'programming_routine(choose_quantity())'),
 	menu_object("restore", "Restore ATtiny85 in it's default state",'mcu_restore()'),
 	menu_object("backup", "Backup Chip",'mcu_backup()'),
-	menu_object("quit", "[Q]uit",'return 0'),
-	menu_object("quit", "a choise",'print("Success")'),
+	menu_object("quit", "Quit",'input("Press Any Key to Quit!")'),
 ]
-
-# code_obj = compile('print("Success")', '<string>', 'exec')
-# exec(code_obj)
-
-
 
 
 #	MAIN-----------------------------------------------------------------	
 
 
-# main_menu()
-input("Press Any Key to Quit!")
+main_menu()
+
+# input("Press Any Key to Quit!")
