@@ -40,24 +40,29 @@ def choose_quantity():
 
 
 #	This function return a string as a name for a folder
-def choose_folder():
+#	Takes as input a flag that let the function know if it needs to create a new folder
+def choose_folder(plus):
 	dir_list = list(filter(os.path.isdir, os.listdir())) # This is a list of the directory in the current path
+	if plus == 1: # Check the flag 
+		dir_list.append("Add a new folder")
 	while 1:
+		
 		while 1:
 			for i in range(len(dir_list)):
 				print(i+1, ")", dir_list[i]) # Print all directories that you found
-			print(i+1, ") OR choose something else!") 
 			try: 
 				choose = int(input('\nChoose a number[1-{}]:'.format(i+1)))
 				break
 			except ValueError:
 				os.system('cls')	# Clear screen
-				print("This is not a valid value!")
-				break
-		if 1 <= choose & choose < i+1 :
+				print("\nThis is not a valid value!\n")
+				
+		if (1 <= choose) and (choose <= i+1):
+			folder = dir_list[choose-1]
 			break
-		
-	folder = str(input("Choose a folder: "))
+	
+	if os.path.isdir(folder) == False :
+		folder = str(input("Choose a folder: "))
 	return folder
 	
 	
@@ -153,13 +158,13 @@ def main_menu():
 		for i in range(len(menu_list)):
 			print(i+1,")",menu_list[i].output)
 		try:
-			choose = int(input("\nWhat do you want to do? : "))
+			choose = int(input("\nWhat do you want to do? [1-{}]: ".format(i+1)))
 			if 0 < choose & choose <= len(menu_list):
 				break
 		except ValueError:
 			os.system('cls')	# Clear screen
 			print("This is not a correct choise.\n")
-	code_obj = compile(menu_list[choose-1].command, '<string>', 'exec')	# This command executes the command of the object we choose.
+	code_obj = compile(menu_list[choose-1].command, '<string>', 'exec')	# This command executes the command that the following objects are initialized with.
 	exec(code_obj)
 	
 
@@ -167,17 +172,13 @@ def main_menu():
 #	menu_object(name, output, command)
 menu_list = [
 	menu_object("at85", "Program ATtiny85", 'programming_routine(choose_quantity())'),
-	menu_object("backup", "Backup a Chip",'mcu_backup(choose_folder())'),
-	menu_object("restore", "Restore a Chip",'mcu_restore(choose_folder())'),
+	menu_object("backup", "Backup a Chip",'mcu_backup(choose_folder(1))'),
+	menu_object("restore", "Restore a Chip",'mcu_restore(choose_folder(0))'),
 	menu_object("restore", "Restore ATtiny85 in it's default state",'mcu_restore("ATtiny_85_default_state")'),
-	menu_object("quit", "Quit",'pass'),
-]
+	menu_object("quit", "Quit",'pass')]
 
 
 #	MAIN-----------------------------------------------------------------	
-
-# choose_folder()
-
 main_menu()
 input("Press Any Key to Quit!")
 os.system('cls')	# Clear screen
