@@ -69,12 +69,13 @@ def choose_folder(plus):
 #	Programming routine of the chips
 def programming_routine(counter):	#	The input needs a int. This number gives the program how many chips will be programmed
 	hex_file = file_find()	#	Find the file first
+	batch = counter
 	while counter > 0:	
 		exit_status = programmer(hex_file)	#	Program each microcontroller independently
 		match exit_status:
 			case 0:
 				counter -= 1
-				input("OK.Press any key to continue!")
+				input("OK.Press any key to continue! [{}/{}]".format(batch-counter, batch))
 			case _:
 				choise = input("Something gone wrong! (Press Any Key to Continue)(Press Q to Quit): ")
 				match choise:
