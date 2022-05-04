@@ -14,7 +14,9 @@ User = os.getlogin()
 BUILD_PATH = "C:/Users/" +User+ "/Documents/Arduino/Builds"
 
 my_programmer = "usbtiny"
-my_mcu = "t85"
+my_mcu = ""
+
+MCU_s = { "ATtiny85":"t85", "ATMEGA328P":"m328p" }	# A dictionary with the mcu's we use
 
 
 #	FUNCTIONS------------------------------------------------------------
@@ -40,8 +42,8 @@ def choose_quantity():
 
 
 #	This function return a string as a name for a folder
-#	Takes as input a flag that let the function know if it needs to create a new folder
-def choose_folder(plus):
+#	Takes as input a flag that let the function know if it needs to include in the menu the choice to create a new folder
+def choose_folder(plus): # "plus" -> 0,1 // 0 = No new folder
 	dir_list = list(filter(os.path.isdir, os.listdir())) # This is a list of the directory in the current path
 	if plus == 1: # Check the flag 
 		dir_list.append("Add a new folder")
@@ -77,7 +79,7 @@ def programming_routine(counter):	#	The input needs a int. This number gives the
 				counter -= 1
 				input("OK.Press any key to continue! [{}/{}]".format(batch-counter, batch))
 			case _:
-				choise = input("Something gone wrong! (Press Any Key to Continue)(Press Q to Quit): ")
+				choise = input("\nSomething gone wrong! (Press Any Key to Continue)(Press Q to Quit): ")
 				match choise:
 					case "Q" | "q":
 						return 1 
@@ -138,6 +140,7 @@ def mcu_restore(backup_folder):	#	"backup_folder" is the folder restore_folder a
 			mem_type = ["eeprom", "flash", "lfuse", "hfuse", "efuse"]
 			for m in mem_type:
 				command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -U "+m+":w:"+m+".hex"
+				print(command)
 				os.system(command)
 			return 0
 		case _:
@@ -169,6 +172,24 @@ def main_menu():
 	exec(code_obj)
 	
 
+#	Function for choosing and saving the MCU that you want
+def get_mcu():
+	while 1:
+		count = 1
+		for i in list(MCU_s):
+			print(count,")",i)
+			count += 1
+		try:
+			choice = int(input("\nChoose what MCU you want to use: "))
+			if choice > 0 and choice < count :
+				break
+		except ValueError:
+			print("The value you gave is wrong!")
+	
+	os.system('cls')	# Clear screen
+	return list(MCU_s)[choice-1]
+	
+	
 # 	Objects initialization for the main menu.----------------------------
 #	menu_object(name, output, command)
 menu_list = [
@@ -180,6 +201,7 @@ menu_list = [
 
 
 #	MAIN-----------------------------------------------------------------	
+my_mcu = get_mcu()
 main_menu()
-input("Press Any Key to Quit!")
+input("\n\nPress Any Key to Quit!")
 os.system('cls')	# Clear screen
