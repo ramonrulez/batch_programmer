@@ -2,9 +2,9 @@ import os
 
 #	WELCOME--------------------------------------------------------------
 os.system('cls')	# Clear screen
-print("\n -------------------------------------")
+print("\n ----------------------------------")
 print("| Welcome to the batch programmer! |")
-print(" -------------------------------------\n")
+print(" ----------------------------------\n")
 
 
 #	INITIALIZATION-------------------------------------------------------
@@ -53,7 +53,7 @@ def choose_folder(plus): # "plus" -> 0,1 // 0 = No new folder
 			for i in range(len(dir_list)):
 				print(i+1, ")", dir_list[i]) # Print all directories that you found
 			try: 
-				choose = int(input('\nChoose a number[1-{}]:'.format(i+1)))
+				choose = int(input('\nChoose a folder [1-{}]:'.format(i+1)))
 				break
 			except ValueError:
 				os.system('cls')	# Clear screen
@@ -159,18 +159,18 @@ class menu_object:
 #	The Main Menu of the script
 def main_menu():
 	while 1:
-		for i in range(len(menu_list)):
-			print(i+1,")",menu_list[i].output)
-		try:
-			choose = int(input("\nWhat do you want to do? [1-{}]: ".format(i+1)))
-			if 0 < choose & choose <= len(menu_list):
-				break
-		except ValueError:
-			os.system('cls')	# Clear screen
-			print("This is not a correct choise.\n")
-	code_obj = compile(menu_list[choose-1].command, '<string>', 'exec')	# This command executes the command that the following objects are initialized with.
-	exec(code_obj)
-	
+		while 1:
+			for i in range(len(menu_list)):
+				print(i+1,")",menu_list[i].output)
+			try:
+				choose = int(input("\nWhat do you want to do? [1-{}]: ".format(i+1)))
+				if 0 < choose & choose <= len(menu_list):
+					break
+			except ValueError:
+				os.system('cls')	# Clear screen
+				print("\nThis is not a correct choise.\n")
+		code_obj = compile(menu_list[choose-1].command, '<string>', 'exec')	# This command executes the command that the following objects are initialized with.
+		exec(code_obj)
 
 #	Function for choosing and saving the MCU that you want
 def get_mcu():
@@ -190,14 +190,16 @@ def get_mcu():
 	return list(MCU_s)[choice-1]
 	
 	
+	
 # 	Objects initialization for the main menu.----------------------------
 #	menu_object(name, output, command)
 menu_list = [
 	menu_object("at85", "Program ATtiny85", 'programming_routine(choose_quantity())'),
-	menu_object("backup", "Backup a Chip",'mcu_backup(choose_folder(1))'),
-	menu_object("restore", "Restore a Chip",'mcu_restore(choose_folder(0))'),
+	menu_object("backup", "Backup a MCU",'mcu_backup(choose_folder(1))'),
+	menu_object("restore", "Restore a MCU",'mcu_restore(choose_folder(0))'),
 	menu_object("restore", "Restore ATtiny85 in it's default state",'mcu_restore("ATtiny_85_default_state")'),
-	menu_object("quit", "Quit",'pass')]
+	menu_object("set mcu", "Set the MCU you use",'my_mcu = get_mcu()'),
+	menu_object("quit", "Quit",'raise SystemExit')]
 
 
 #	MAIN-----------------------------------------------------------------	
