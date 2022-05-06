@@ -1,4 +1,5 @@
 import os
+import sys
 
 #	WELCOME--------------------------------------------------------------
 os.system('cls')	# Clear screen
@@ -14,7 +15,7 @@ User = os.getlogin()
 BUILD_PATH = "C:/Users/" +User+ "/Documents/Arduino/Builds"
 
 my_programmer = "usbtiny"
-my_mcu = ""
+# my_mcu = ""
 
 MCU_s = { "ATtiny85":"t85", "ATMEGA328P":"m328p" }	# A dictionary with the mcu's we use
 
@@ -61,8 +62,8 @@ def choose_folder(plus): # "plus" -> 0,1 // 1 = Ask for new folder
 				os.system('cls')	# Clear screen
 				print("\nThat was not a valid choise!\n")
 		
-			folder = dir_list[choose-1]
-			break
+		folder = dir_list[choose-1]
+		break
 	
 	if os.path.isdir(folder) == False :
 		folder = str(input("Choose a folder: "))
@@ -89,7 +90,7 @@ def programming_routine(counter):	#	The input needs a int. This number gives the
 #	The actual programming of each chip
 def programmer(file):	#	The input needs a *.ino.hex file to read from and write to the chip
 	os.chdir(BUILD_PATH)	# Change to the build directory
-	command = "avrdude -v -p "+my_mcu+" -c "+my_programmer+" -U lfuse:w:0xE2:m -U flash:w:"+file 
+	command = "avrdude -v -p "+my_mcu.id+" -c "+my_programmer+" -U lfuse:w:0xE2:m -U flash:w:"+file 
 	print("Programming...")
 	exit_status = os.system(command)
 	return exit_status
@@ -119,7 +120,7 @@ def mcu_backup(restore_folder):	#	"restore_folder" is the folder that the files 
 			os.chdir(restore_folder)	#	change directory restore_folder you want to save the results 
 			mem_type = ["eeprom", "flash", "signature", "lfuse", "hfuse", "efuse"]
 			for m in mem_type:
-				command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -n -U "+m+":r:"+m+".hex:i"
+				command = "avrdude -p "+my_mcu.id+" -c "+my_programmer+" -n -U "+m+":r:"+m+".hex:i"
 				os.system(command)
 			return 0
 		case _:
@@ -140,7 +141,7 @@ def mcu_restore(backup_folder):	#	"backup_folder" is the folder restore_folder a
 			os.chdir(backup_folder)	#	In which folder you want to save the results 
 			mem_type = ["eeprom", "flash", "lfuse", "hfuse", "efuse"]
 			for m in mem_type:
-				command = "avrdude -p "+my_mcu+" -c "+my_programmer+" -U "+m+":w:"+m+".hex"
+				command = "avrdude -p "+my_mcu.id+" -c "+my_programmer+" -U "+m+":w:"+m+".hex"
 				print(command)
 				os.system(command)
 			return 0
@@ -149,35 +150,8 @@ def mcu_restore(backup_folder):	#	"backup_folder" is the folder restore_folder a
 			return 1
 
 
-#	Classes for the the main menu objects
-class menu_object:
-	def __init__(self, id, out, cmd):
-		self.name = id
-		self.output = out
-		self.command = cmd
-	
-
-#	The Main Menu of the script
-def main_menu():
-	while 1:
-		while 1:
-			for i in range(len(menu_list)):
-				print(i+1,")",menu_list[i].output)
-			
-			try:
-				choose = int(input("\nWhat do you want to do? [1-{}]: ".format(i+1)))
-				assert 0 < choose and choose <= len(menu_list)
-				break
-			except (ValueError, AssertionError):
-				os.system('cls')	# Clear screen
-				print("\nThat was not a valid choise!\n")
-		
-		code_obj = compile(menu_list[choose-1].command, '<string>', 'exec')	# This command executes the command that the following objects are initialized with.
-		exec(code_obj)
-
-
 #	Function for choosing and saving the MCU that you want
-def get_mcu():
+def set_mcu():
 	while 1:
 		count = 1
 		for i in list(MCU_s):
@@ -193,24 +167,68 @@ def get_mcu():
 			print("\nThat was not a valid choise!\n")
 	
 	os.system('cls')	# Clear screen
-	return list(MCU_s)[choice-1]
+	mcu_name = list(MCU_s)[choice-1]
+	mcu_id = MCU_s[mcu_name]
+	return mcu_name, mcu_id 
+
+
+#	CLASSES--------------------------------------------------------------
+#	Class for the the main menu objects
+class menu_object:
+	def __init__(self, id, out, cmd):
+		self.name = id
+		self.output = out
+		self.command = cmd
 	
 	
-	
-# 	Objects initialization for the main menu.----------------------------
+#	Class for the current mcu
+class MCU:
+	def __init__(self, name, id):
+		self.name = name
+		self.id = id
+
+
+#	MAIN MENU------------------------------------------------------------
+#	The Main Menu of the script
+def main_menu():
+	while 1:
+		while 1:
+
+#	---------------------------------------------------------------------				
+			# print("NAME: "+my_mcu.name+" and the ID: "+my_mcu.id)
+#	---------------------------------------------------------------------
+
+			for i in range(len(menu_list)):
+				print(i+1,")",menu_list[i].output)				
+			
+			try:
+				choose = int(input("\nWhat do you want to do? [1-{}]: ".format(i+1)))
+				assert 0 < choose and choose <= len(menu_list)
+				break
+			except (ValueError, AssertionError):
+				os.system('cls')	# Clear screen
+				print("\nThat was not a valid choise!\n")
+		
+		code_obj = compile(menu_list[choose-1].command, '<string>', 'exec')	# This command executes the command that the following objects are initialized with.
+		exec(code_obj)
+
+
+#	SET OBJECTS----------------------------------------------------------
+mcu_name, mcu_id = set_mcu()
+my_mcu = MCU(mcu_name, mcu_id)	#	Set an MCU object
+
+# 	Objects initialization for the main menu
 #	menu_object(name, output, command)
 menu_list = [
 	menu_object("at85", "Program ATtiny85", 'programming_routine(choose_quantity())'),
 	menu_object("backup", "Backup a MCU",'mcu_backup(choose_folder(1))'),
 	menu_object("restore", "Restore a MCU",'mcu_restore(choose_folder(0))'),
 	menu_object("restore", "Restore ATtiny85 in it's default state",'mcu_restore("ATtiny_85_default_state")'),
-	# menu_object("set mcu", "Set the MCU you use [{}]".format(my_mcu),'my_mcu = get_mcu()'),
-	menu_object("set mcu", 'Set the MCU you use ['+ my_mcu +']','my_mcu = get_mcu()'),
+	menu_object("set mcu", "Set the MCU you use [{}]".format(my_mcu.name),'my_mcu.name, my_mcu.id = set_mcu()'),
 	menu_object("quit", "Quit",'raise SystemExit')]
 
 
 #	MAIN-----------------------------------------------------------------	
-my_mcu = get_mcu()
 main_menu()
 input("\n\nPress Any Key to Quit!")
 os.system('cls')	# Clear screen
